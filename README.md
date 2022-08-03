@@ -1,4 +1,4 @@
-# Dira
+# Directory Alias
 
 A CLI tool for aliasing directories for faster directory switching
 
