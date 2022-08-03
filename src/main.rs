@@ -1,4 +1,5 @@
 use clap::Parser;
+
 use serde_json::Value;
 use std::{fs, path::Path};
 
@@ -12,7 +13,7 @@ struct Cli {
 
 const CONFIG_FILE_NAME: &str = "config.json";
 
-fn main() {
+fn main() -> Result<(), String> {
   let args = Cli::parse();
 
   let home_path = home::home_dir()
@@ -48,14 +49,19 @@ fn main() {
     config[alias] = serde_json::Value::String(cwd);
     let config_as_string = serde_json::to_string_pretty(&config).unwrap();
     fs::write(&config_file_path, config_as_string).unwrap();
-    return;
+    return Ok(());
   }
 
   let path_alias = &args.path_alias.unwrap();
 
-  let path_by_alias = config.get(path_alias).expect("Alias does not exist.");
+  let path_by_alias = match config.get(path_alias) {
+    Some(path) => Ok(path),
+    None => Err("Alias does not exist"),
+  };
 
-  let command_str = format!("cd {}", path_by_alias);
+  let command_str = format!("cd {}", path_by_alias?);
 
   println!("{}", command_str);
+
+  Ok(())
 }
