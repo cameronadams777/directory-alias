@@ -50,11 +50,7 @@ fn main() {
 
   let path_alias = &args.path_alias.unwrap();
 
-  println!("{}", path_alias);
-
   let path_by_alias = config.get(path_alias).expect("Alias does not exist.");
-
-  println!("{}", path_by_alias.to_string());
 
   let command_str = format!("cd {}", path_by_alias);
 
