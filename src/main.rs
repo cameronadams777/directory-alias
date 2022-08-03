@@ -25,8 +25,11 @@ fn main() {
 
   let config_file_path = format!("{}{}", config_path, CONFIG_FILE_NAME);
 
-  if !Path::new(&config_file_path).is_file() {
+  if !Path::new(&config_path).is_dir() {
     fs::create_dir(config_path).unwrap();
+  }
+
+  if !Path::new(&config_file_path).is_file() {
     fs::write(&config_file_path, "{}").unwrap();
   }
 
