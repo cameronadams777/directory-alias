@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 0.2.0
+
+### Features
+
+- --list flag to list all aliases and their directories
+
 ## 0.1.0
 
 ### Features

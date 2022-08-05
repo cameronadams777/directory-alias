@@ -18,6 +18,13 @@ dira mcp # OUTPUT: cd "/Users/cameron/dev/my-cool-project"
 
 dira my-cool-project # OUTPUT: Alias does not exist.
 
+dira --list
+
+## OUTPUT:
+## {
+##    "mcp": "/Users/cameron/dev/my-cool-project"
+## }
+
 ...
 
 ```
