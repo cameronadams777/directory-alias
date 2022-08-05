@@ -15,9 +15,7 @@ struct Cli {
 
 const CONFIG_FILE_NAME: &str = "config.json";
 
-fn main() -> Result<(), String> {
-  let args = Cli::parse();
-
+fn get_or_build_config_dir() -> String {
   let home_path = home::home_dir()
     .unwrap()
     .into_os_string()
@@ -36,16 +34,24 @@ fn main() -> Result<(), String> {
     fs::write(&config_file_path, "{}").unwrap();
   }
 
-  let data = fs::read_to_string(&config_file_path).unwrap();
+  return config_file_path;
+}
+
+fn main() -> Result<(), String> {
+  let args = Cli::parse();
+
+  let config_file_path = get_or_build_config_dir();
+
+  let config = fs::read_to_string(&config_file_path).unwrap();
 
   if args.list {
-    println!("{}", data);
+    println!("{}", config);
     return Ok(());
   }
 
-  let mut config: Value = serde_json::from_str(data.as_str()).unwrap();
+  let mut mutable_config: Value = serde_json::from_str(config.as_str()).unwrap();
 
-  let alias = &args.alias;
+  let alias = args.alias;
 
   if alias.chars().count() > 0 {
     let cwd = std::env::current_dir()
@@ -53,15 +59,15 @@ fn main() -> Result<(), String> {
       .into_os_string()
       .into_string()
       .unwrap();
-    config[alias] = serde_json::Value::String(cwd);
-    let config_as_string = serde_json::to_string_pretty(&config).unwrap();
+    mutable_config[alias] = serde_json::Value::String(cwd);
+    let config_as_string = serde_json::to_string_pretty(&mutable_config).unwrap();
     fs::write(&config_file_path, config_as_string).unwrap();
     return Ok(());
   }
 
-  let path_alias = &args.path_alias.unwrap();
+  let path_alias = args.path_alias.unwrap();
 
-  let path_by_alias = match config.get(path_alias) {
+  let path_by_alias = match mutable_config.get(path_alias) {
     Some(path) => Ok(path),
     None => Err("Alias does not exist"),
   };
