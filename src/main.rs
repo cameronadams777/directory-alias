@@ -9,6 +9,8 @@ struct Cli {
   path_alias: Option<String>,
   #[clap(short, long, value_parser, default_value = "")]
   alias: String,
+  #[clap(short, long, value_parser, default_value = "false")]
+  list: bool,
 }
 
 const CONFIG_FILE_NAME: &str = "config.json";
@@ -35,6 +37,11 @@ fn main() -> Result<(), String> {
   }
 
   let data = fs::read_to_string(&config_file_path).unwrap();
+
+  if args.list {
+    println!("{}", data);
+    return Ok(());
+  }
 
   let mut config: Value = serde_json::from_str(data.as_str()).unwrap();
 
