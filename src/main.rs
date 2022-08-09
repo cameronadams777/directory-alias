@@ -6,9 +6,12 @@ use std::{fs, path::Path};
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
 struct Cli {
+  /// Alias of the directory to navigate to
   path_alias: Option<String>,
+  /// Alias to assign to current working directory
   #[clap(short, long, value_parser, default_value = "")]
   alias: String,
+  /// Should list directory aliases
   #[clap(short, long, value_parser, default_value = "false")]
   list: bool,
 }
