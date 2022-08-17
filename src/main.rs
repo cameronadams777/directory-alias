@@ -1,5 +1,6 @@
 use clap::Parser;
 
+use clipboard::{ClipboardContext, ClipboardProvider};
 use serde_json::Value;
 use std::{fs, path::Path};
 
@@ -68,6 +69,8 @@ fn main() -> Result<(), String> {
     return Ok(());
   }
 
+  let mut ctx: ClipboardContext = ClipboardProvider::new().unwrap();
+
   let path_alias = args.path_alias.unwrap();
 
   let path_by_alias = match mutable_config.get(path_alias) {
@@ -77,7 +80,9 @@ fn main() -> Result<(), String> {
 
   let command_str = format!("cd {}", path_by_alias?);
 
-  println!("{}", command_str);
+  ctx.set_contents(command_str.to_owned()).unwrap();
+
+  println!("{} added to clipboard", command_str);
 
   Ok(())
 }
