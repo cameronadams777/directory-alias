@@ -2,7 +2,7 @@ use clap::Parser;
 
 use clipboard::{ClipboardContext, ClipboardProvider};
 use serde_json::Value;
-use std::{fs, path::Path};
+use std::{collections::HashMap, fs, path::Path};
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -15,6 +15,9 @@ struct Cli {
   /// Should list directory aliases
   #[clap(short, long, value_parser, default_value = "false")]
   list: bool,
+  /// Alias to be removed from directory list
+  #[clap(short, long, value_parser, default_value = "")]
+  remove: String,
 }
 
 const CONFIG_FILE_NAME: &str = "config.json";
@@ -53,7 +56,7 @@ fn main() -> Result<(), String> {
     return Ok(());
   }
 
-  let mut mutable_config: Value = serde_json::from_str(config.as_str()).unwrap();
+  let mut mutable_config: HashMap<String, Value> = serde_json::from_str(config.as_str()).unwrap();
 
   let alias = args.alias;
 
@@ -63,7 +66,16 @@ fn main() -> Result<(), String> {
       .into_os_string()
       .into_string()
       .unwrap();
-    mutable_config[alias] = serde_json::Value::String(cwd);
+    mutable_config.insert(alias, serde_json::Value::String(cwd));
+    let config_as_string = serde_json::to_string_pretty(&mutable_config).unwrap();
+    fs::write(&config_file_path, config_as_string).unwrap();
+    return Ok(());
+  }
+
+  let alias_to_remove = args.remove;
+
+  if alias_to_remove.chars().count() > 0 {
+    mutable_config.remove_entry(alias_to_remove.as_str());
     let config_as_string = serde_json::to_string_pretty(&mutable_config).unwrap();
     fs::write(&config_file_path, config_as_string).unwrap();
     return Ok(());
@@ -73,7 +85,7 @@ fn main() -> Result<(), String> {
 
   let path_alias = args.path_alias.unwrap();
 
-  let path_by_alias = match mutable_config.get(path_alias) {
+  let path_by_alias = match mutable_config.get(path_alias.as_str()) {
     Some(path) => Ok(path),
     None => Err("Alias does not exist"),
   };
