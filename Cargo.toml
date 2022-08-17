@@ -1,7 +1,7 @@
 [package]
 name = "dira"
 edition = "2021"
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Cameron Adams <cameron.adams@hey.com"]
 license = "MIT"
 description = "A CLI tool for aliasing directories for faster directory switching"
